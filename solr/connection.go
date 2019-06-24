@@ -122,7 +122,7 @@ type Connection struct {
 	core     string
 	username string
 	password string
-	headers [][]string
+	headers  [][]string
 }
 
 // NewConnection will parse solrUrl and return a connection object, solrUrl must be a absolute url or path
@@ -155,7 +155,7 @@ func (c *Connection) Resource(source string, params *url.Values) (*[]byte, error
 	encodedParameters := params.Encode()
 	var r []byte
 	var err error
-	if len(baseUrl) + len(encodedParameters) >= MaximumSolrUrlLengthSupported {
+	if len(baseUrl)+len(encodedParameters) >= MaximumSolrUrlLengthSupported {
 		data := []byte(encodedParameters)
 		var headers [][]string
 		copy(headers, c.headers)
@@ -183,7 +183,7 @@ func (c *Connection) Update(data interface{}, params *url.Values) (*SolrUpdateRe
 
 	params.Set("wt", "json")
 
-	r, err := HTTPPost(fmt.Sprintf("%s/%s/update/?%s", c.url.String(), c.core, params.Encode()), b, [][]string{{"Content-Type", "application/json"}}, c.username, c.password)
+	r, err := HTTPPost(fmt.Sprintf("%s/%s/update/json/docs?%s", c.url.String(), c.core, params.Encode()), b, nil, c.username, c.password)
 
 	if err != nil {
 		return nil, err
